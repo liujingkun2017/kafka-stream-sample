@@ -1,51 +1,38 @@
 package org.liujk.spring.boot.sample.controller;
 
-
-import org.liujk.spring.boot.sample.config.PersonConfig;
-import org.liujk.spring.boot.sample.config.PersonCustomConfig;
+import org.liujk.spring.boot.sample.common.Constants;
+import org.liujk.spring.boot.sample.dto.TxSampleDTO;
+import org.liujk.spring.boot.sample.mq.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@EnableConfigurationProperties({PersonConfig.class})
 public class HelloController {
 
-
-    @Value("${my.name}")
-    private String name;
-
-    @Value("${my.age}")
-    private Integer age;
-
-    @Value("${my.phone}")
-    private String phone;
-
     @Autowired
-    private PersonConfig personConfig;
-
-    @Autowired
-    private PersonCustomConfig personCustomConfig;
+    private Publisher publisher;
 
     @RequestMapping("/hello-world")
     public String index() {
+        return "hello world!";
+    }
 
-        String res1 = "name:" + name
-                + " age:" + age
-                + " phone:" + phone;
+    @RequestMapping("/publish")
+    public String publish() {
 
-        String res2 = "tom.name:" + personConfig.getName()
-                + " tom.age:" + personConfig.getAge()
-                + " tom.phone:" + personConfig.getPhone();
+        TxSampleDTO txSampleDTO = new TxSampleDTO();
+        txSampleDTO.setName("sample-app");
+        txSampleDTO.setDuration("xx");
+        Map<String, String> msgMap = new HashMap<>();
+        msgMap.put("name", txSampleDTO.getName());
+        msgMap.put("duration111", txSampleDTO.getDuration());
+        publisher.sendTopicMsgToKafka(Constants.KAFKA_TOPIC, txSampleDTO.getName(), msgMap);
 
-        String res3 = "custom.name:" + personCustomConfig.getName()
-                + " custom.age:" + personCustomConfig.getAge()
-                + " custom.phone:" + personCustomConfig.getPhone();
-
-
-        return res1 + res2 + res3 + " Greetings from hello world!";
+        return "ok!";
     }
 
 }
