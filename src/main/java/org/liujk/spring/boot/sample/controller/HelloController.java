@@ -29,7 +29,7 @@ public class HelloController {
         txSampleDTO.setDuration("xx");
         Map<String, String> msgMap = new HashMap<>();
         msgMap.put("name", txSampleDTO.getName());
-        msgMap.put("duration111", txSampleDTO.getDuration());
+        msgMap.put("duration", txSampleDTO.getDuration());
         publisher.sendTopicMsgToKafka(Constants.KAFKA_TOPIC, txSampleDTO.getName(), msgMap);
 
         return "ok!";
