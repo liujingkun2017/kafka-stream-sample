@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 public class HelloController {
@@ -24,14 +25,20 @@ public class HelloController {
     @RequestMapping("/publish")
     public String publish() {
 
-        TxSampleDTO txSampleDTO = new TxSampleDTO();
-        txSampleDTO.setName("sample-app");
-        txSampleDTO.setDuration("xx");
-        Map<String, String> msgMap = new HashMap<>();
-        msgMap.put("name", txSampleDTO.getName());
-        msgMap.put("duration", txSampleDTO.getDuration());
-        publisher.sendTopicMsgToKafka(Constants.KAFKA_TOPIC, txSampleDTO.getName(), msgMap);
-
+        for (int i = 0; i < 2000; i++) {
+            TxSampleDTO txSampleDTO = new TxSampleDTO();
+            txSampleDTO.setName("sample-app");
+            txSampleDTO.setDuration(String.valueOf(new Random().nextInt(20)));
+            Map<String, String> msgMap = new HashMap<>();
+            msgMap.put("name", txSampleDTO.getName());
+            msgMap.put("duration", txSampleDTO.getDuration());
+            publisher.sendTopicMsgToKafka(Constants.KAFKA_SOURCE_TOPIC, txSampleDTO.getName(), msgMap);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return "ok!";
     }
 
