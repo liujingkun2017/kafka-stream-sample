@@ -7,8 +7,10 @@ public class TxSampleDTO {
 
     private long timestamp;
 
+    private long id;
+
     private String name;
 
-    private String duration;
+//    private String duration;
 
 }

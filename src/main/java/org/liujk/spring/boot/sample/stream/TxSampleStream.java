@@ -9,6 +9,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.liujk.spring.boot.sample.common.Constants;
+import org.liujk.spring.boot.sample.dto.TxSampleDTO;
 import org.liujk.spring.boot.sample.dto.TxSampleStreamDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @Component
@@ -39,20 +42,30 @@ public class TxSampleStream {
         KGroupedStream stream = builder.<String, String>stream(Constants.KAFKA_SOURCE_TOPIC).groupByKey();
 
         KTable aggregate = stream
-                .windowedBy(TimeWindows.of(Duration.ofSeconds(3))
+                .windowedBy(TimeWindows.of(Duration.ofSeconds(1))
                         .advanceBy(Duration.ofSeconds(1))
-                        .grace(Duration.ZERO))
+                        .grace(Duration.ofMillis(1 * 60 * 1000))
+                )
                 .aggregate(
                         () -> null,
                         (aggKey, newValue, aggValue) -> {
+                            TxSampleDTO txSampleDTO = JSONUtil.toBean((String) newValue, TxSampleDTO.class);
+
                             if (StringUtils.isEmpty(aggValue)) {
-                                TxSampleStreamDTO txSampleStreamDTO = JSONUtil.toBean((String) newValue, TxSampleStreamDTO.class);
+                                TxSampleStreamDTO txSampleStreamDTO = new TxSampleStreamDTO();
                                 txSampleStreamDTO.setCount(1);
+                                txSampleStreamDTO.setName(txSampleDTO.getName());
+                                Map<Long, Long> datas = new HashMap<>();
+                                datas.put(txSampleDTO.getId(), txSampleDTO.getTimestamp());
+                                txSampleStreamDTO.setDatas(datas);
                                 return JSONUtil.toJsonStr(txSampleStreamDTO);
                             }
 
                             TxSampleStreamDTO txSampleStreamDTO = JSONUtil.toBean((String) aggValue, TxSampleStreamDTO.class);
                             txSampleStreamDTO.setCount(txSampleStreamDTO.getCount() + 1);
+                            Map<Long, Long> datas = txSampleStreamDTO.getDatas();
+                            datas.put(txSampleDTO.getId(), txSampleDTO.getTimestamp());
+                            txSampleStreamDTO.setDatas(datas);
                             return JSONUtil.toJsonStr(txSampleStreamDTO);
                         },
                         Materialized.<String, String, KeyValueStore<String, String>>as(Constants.APPLICATION_ID + "-action")

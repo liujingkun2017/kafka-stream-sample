@@ -43,15 +43,17 @@ public class HelloController {
 
 //        KafkaStreams kafkaStreams = start();
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 20; i++) {
             TxSampleDTO txSampleDTO = new TxSampleDTO();
             txSampleDTO.setTimestamp(new Date().getTime());
+            txSampleDTO.setId(i);
             txSampleDTO.setName("sample-app");
-            txSampleDTO.setDuration(String.valueOf(new Random().nextInt(20)));
+//            txSampleDTO.setDuration(String.valueOf(new Random().nextInt(20)));
             Map<String, Object> msgMap = new HashMap<>();
             msgMap.put("timestamp", txSampleDTO.getTimestamp());
             msgMap.put("name", txSampleDTO.getName());
-            msgMap.put("duration", txSampleDTO.getDuration());
+            msgMap.put("id", txSampleDTO.getId());
+//            msgMap.put("duration", txSampleDTO.getDuration());
             publisher.sendTopicMsgToKafka(Constants.KAFKA_SOURCE_TOPIC, txSampleDTO.getName(), msgMap);
             try {
                 Thread.sleep(20);
@@ -68,23 +70,32 @@ public class HelloController {
 
     @RequestMapping("/publish-one")
     public String publishOne() {
-        TxSampleDTO txSampleDTO = new TxSampleDTO();
-        txSampleDTO.setTimestamp(new Date().getTime());
-        txSampleDTO.setName("sample-app");
-        txSampleDTO.setDuration(String.valueOf(new Random().nextInt(20)));
-        Map<String, Object> msgMap = new HashMap<>();
-        msgMap.put("timestamp", 1594641169000l);
-        msgMap.put("name", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        msgMap.put("duration", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        publisher.sendTopicMsgToKafka(Constants.KAFKA_SOURCE_TOPIC, txSampleDTO.getName(), msgMap);
+
         try {
-            Thread.sleep(20);
+            Thread.sleep(40 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        for (int i = 10000; i < 10020; i++) {
+            TxSampleDTO txSampleDTO = new TxSampleDTO();
+            txSampleDTO.setTimestamp(new Date().getTime());
+            txSampleDTO.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            txSampleDTO.setId(i);
+//        txSampleDTO.setDuration(String.valueOf(new Random().nextInt(20)));
+            Map<String, Object> msgMap = new HashMap<>();
+            msgMap.put("timestamp", txSampleDTO.getTimestamp());
+            msgMap.put("name", txSampleDTO.getName());
+            msgMap.put("id", txSampleDTO.getId());
+            publisher.sendTopicMsgToKafka(Constants.KAFKA_SOURCE_TOPIC, txSampleDTO.getName(), msgMap);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return "ok!";
     }
-
 
 
     private KafkaStreams start() {

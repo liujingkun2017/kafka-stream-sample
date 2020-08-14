@@ -16,10 +16,11 @@ public class Consumer {
     public void consume(byte[] dataBtyes) throws Exception {
 
         String dataStr = new String(dataBtyes, "UTF-8");
-        System.out.println("Consumer：" + dataStr + ",time:" + new Date());
+        System.out.println("Consumer：" + dataStr + ", time:" + new Date().getTime());
 
         count++;
         System.out.println("count:" + count);
+        System.out.println("----------------------------------------");
     }
 
 }
