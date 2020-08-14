@@ -44,7 +44,7 @@ public class TxSampleStream {
         KTable aggregate = stream
                 .windowedBy(TimeWindows.of(Duration.ofSeconds(1))
                         .advanceBy(Duration.ofSeconds(1))
-                        .grace(Duration.ofMillis(1 * 60 * 1000))
+                        .grace(Duration.ofMillis(500))
                 )
                 .aggregate(
                         () -> null,
