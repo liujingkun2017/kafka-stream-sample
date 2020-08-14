@@ -21,13 +21,13 @@ public class Publisher {
      * @param topicKey
      * @param msgMap
      */
-    public void sendTopicMsgToKafka(String topic, String topicKey, Map<String, String> msgMap) {
+    public void sendTopicMsgToKafka(String topic, String topicKey, Map<String, Object> msgMap) {
 
         ListenableFuture listenableFuture = kafkaTemplate.send(topic, topicKey, JSONUtil.toJsonStr(msgMap));
         listenableFuture.addCallback((object) -> {
-            System.out.println("send success");
+//            System.out.println("send success");
         }, (e) -> {
-            System.out.println("send fail");
+//            System.out.println("send fail");
         });
     }
 
