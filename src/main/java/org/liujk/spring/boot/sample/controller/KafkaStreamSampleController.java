@@ -25,7 +25,7 @@ import java.time.Duration;
 import java.util.*;
 
 @RestController
-public class HelloController {
+public class KafkaStreamSampleController {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaServers;

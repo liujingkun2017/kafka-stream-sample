@@ -1,0 +1,66 @@
+{
+  "type": "kafka",
+  "spec": {
+    "ioConfig": {
+      "type": "kafka",
+      "consumerProperties": {
+        "bootstrap.servers": "127.0.0.1:9092"
+      },
+      "topic": "kafka-durid-sample-topic13",
+      "inputFormat": {
+        "type": "json"
+      }
+    },
+    "tuningConfig": {
+      "type": "kafka"
+    },
+    "dataSchema": {
+      "dataSource": "kafka-durid-sample-topic13",
+      "granularitySpec": {
+        "type": "uniform",
+        "queryGranularity": "SECOND",
+        "segmentGranularity": "HOUR",
+        "rollup": true
+      },
+      "timestampSpec": {
+        "column": "timestamp",
+        "format": "auto"
+      },
+      "dimensionsSpec": {
+        "dimensions": [
+          "city",
+          "gender",
+          "name",
+          {
+            "name": "age",
+            "type": "string"
+          },
+          {
+            "name": "height",
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "name": "weight"
+          }
+        ]
+      },
+      "metricsSpec": [
+        {
+          "name": "count",
+          "type": "count"
+        },
+        {
+          "name": "sum_expend",
+          "type": "longSum",
+          "fieldName": "expend"
+        },
+        {
+          "name": "sum_income",
+          "type": "longSum",
+          "fieldName": "income"
+        }
+      ]
+    }
+  }
+}
