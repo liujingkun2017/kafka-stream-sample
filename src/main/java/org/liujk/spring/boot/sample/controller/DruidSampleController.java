@@ -23,7 +23,9 @@ public class DruidSampleController {
     public String druidPublish() {
 
         int i = 0;
-        while (i < 100000000) {
+        while (i < 10000000) {
+
+            System.out.println("i=" + i);
 
             Map<String, Object> data = new HashMap<>();
 
