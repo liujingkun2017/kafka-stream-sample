@@ -22,10 +22,27 @@ public class DruidSampleController {
     @RequestMapping("/druid-publish")
     public String druidPublish() {
 
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                publishMesToDruid();
+            }).start();
+        }
+
+        return "ok";
+    }
+
+
+    private void publishMesToDruid() {
         int i = 0;
         while (i < 10000000) {
 
-            System.out.println("i=" + i);
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("thread=" + Thread.currentThread().getName() + "i=" + i);
 
             Map<String, Object> data = new HashMap<>();
 
@@ -69,7 +86,5 @@ public class DruidSampleController {
         }
 
         System.out.println("finished");
-
-        return "ok";
     }
 }
